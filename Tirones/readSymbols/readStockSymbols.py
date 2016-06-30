@@ -3,22 +3,23 @@ import re
 
 def readSymbols(filename):
 
-    f = open(filename)
+    f = open(filename,'r')
 
     keyString = "/shares/microsite?Instrument="
 
-    symbols = []
+    dataList = []
 
     for line in f:
         if keyString in line:
+            data = {}
             line = f.next()
             matchFirst = re.search("'>", line)
             matchSecond = re.search("</", line)
-            symbol = line[matchFirst.start(0)+2:matchSecond.start(0)]
-            symbol = re.sub(r"\s+", '-', symbol)
-            symbols.append(symbol)
+            data['Symbol'] = line[matchFirst.start(0)+2:matchSecond.start(0)]
+            data['Symbol'] = re.sub(r"\s+", '-', data['Symbol'])
+            dataList.append(data)
 
-    return symbols
+    return dataList
 
     f.close()
 

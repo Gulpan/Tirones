@@ -81,7 +81,7 @@ class stock:
         ax.grid(True)
         ax.set_xlabel('Date')
         ax.set_ylabel('Closing Price (SEK)')
-        ax.set_title('ABB.ST')
+        ax.set_title(self.symbol)
 
         fig.autofmt_xdate()
 
