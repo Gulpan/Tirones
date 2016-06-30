@@ -83,7 +83,7 @@ class stock:
         ax.autoscale_view()
         ax.grid(True)
         ax.set_xlabel('Date')
-        ax.set_ylabel('Closing Price (SEK)')
+        ax.set_ylabel('Closing Price (' + self.currency + ')')
         ax.set_title(self.symbol)
 
         fig.autofmt_xdate()
