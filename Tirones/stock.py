@@ -11,19 +11,30 @@ class stock:
         #super(stock, self).__init__()
         self.symbol = stockSymbol
 
+    def convertTime(self, time):
+        return datetime.datetime.strptime(time,"%Y-%m-%d")
+
     def getHist(self, start, end):
+        if isinstance(start, datetime.date):
+            self.start = start
+        else:
+            self.start = self.convertTime(start)
+
+        if isinstance(end, datetime.date):
+            self.end = end
+        else:
+            self.end = self.convertTime(end)
+
         self.yahooHandle = yahoo_finance.Share(self.symbol)
-        self.hist = self.yahooHandle.get_historical(start, end)
-        self.start = start
-        self.end = end
+        self.hist = self.yahooHandle.get_historical(self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d"))
 
         #self.closings = [day['Close'] for day in hist]
 
     def checkDates(self, start, end):
 
-        if datetime.datetime.strptime(self.start,"%Y-%m-%d") > datetime.datetime.strptime(start,"%Y-%m-%d"):
+        if self.start > self.convertTime(start):
             raise ValueError("Start time before history start",'startbeforehist')
-        elif datetime.datetime.strptime(self.end,"%Y-%m-%d") < datetime.datetime.strptime(end,"%Y-%m-%d"):
+        elif self.end < self.convertTime(end):
             raise ValueError("End time after history end",'endafterhist')
 
 
@@ -40,7 +51,7 @@ class stock:
 
             # TODO (BUG): Will always plot entire history
             xvalue = [day[type] for day in self.hist]
-            dates = [datetime.datetime.strptime(day['Date'],"%Y-%m-%d") for day in self.hist]
+            dates = [self.convertTime(day['Date']) for day in self.hist]
 
             days = dat.DayLocator(tz=None, bymonthday=None, interval=2)
             daysFmt = dat.DateFormatter("%d-%m-%y")
