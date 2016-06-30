@@ -12,18 +12,15 @@ class stock:
         self.symbol = stockSymbol
 
     def convertTime(self, time):
-        return datetime.datetime.strptime(time,"%Y-%m-%d")
+        if not isinstance(time, datetime.date):
+            return datetime.datetime.strptime(time,"%Y-%m-%d")
+        else:
+            return time
 
     def getHist(self, start, end):
-        if isinstance(start, datetime.date):
-            self.start = start
-        else:
-            self.start = self.convertTime(start)
 
-        if isinstance(end, datetime.date):
-            self.end = end
-        else:
-            self.end = self.convertTime(end)
+        self.start = self.convertTime(start)
+        self.end = self.convertTime(end)
 
         self.yahooHandle = yahoo_finance.Share(self.symbol)
         self.hist = self.yahooHandle.get_historical(self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d"))
@@ -32,20 +29,25 @@ class stock:
 
     def checkDates(self, start, end):
 
-        if self.start > self.convertTime(start):
+        if self.start > start:
             raise ValueError("Start time before history start",'startbeforehist')
-        elif self.end < self.convertTime(end):
+        elif self.end < end:
             raise ValueError("End time after history end",'endafterhist')
 
 
-    def plot(self, start, end, types=['Close'], fmt=['b-']):
+    def plot(self, plotStart, plotEnd, types=['Close'], fmt=['b-']):
 
-        self.checkDates(start, end)
+        plotStart = self.convertTime(plotStart)
+        plotEnd = self.convertTime(plotEnd)
+        self.checkDates(plotStart, plotEnd)
 
         if len(types) != len(fmt):
             raise ValueError("Length of 'types' and 'fmt' must be the same. len(types): %d, len(fmt): %d" % (len(types), len(fmt)))
 
         fig, ax = plt.subplots()
+
+        startIndex = plotStart - self.start
+        endIndex = self.end - plotEnd
 
         for index, type in enumerate(types):
 
