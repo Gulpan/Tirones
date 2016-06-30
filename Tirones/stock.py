@@ -7,9 +7,12 @@ import datetime
 class stock:
     """Class stock, contains all data for the stock-company"""
 
-    def __init__(self, stockSymbol):
+    def __init__(self, data):
         #super(stock, self).__init__()
-        self.symbol = stockSymbol
+        self.symbol = data['Symbol'] + '.ST'
+        self.name = data['Name']
+        self.branch = data['Branch']
+        self.currency = data['Currency']
 
     def convertTime(self, time):
         if not isinstance(time, datetime.date):
