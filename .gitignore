@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Mac specific files
+*.DS_Store
+
+# htm files for reading stocksymbols
+*.htm
