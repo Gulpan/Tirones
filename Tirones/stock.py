@@ -69,9 +69,6 @@ class stock:
 
         numXLabels = 10
         interval = (endIndex - startIndex)/numXLabels + 1
-        print endIndex
-        print startIndex
-        print interval
         # Set format for xlabel
         days = dat.DayLocator(tz=None, bymonthday=None, interval=interval)
         daysFmt = dat.DateFormatter("%d-%m-%y")
