@@ -23,8 +23,7 @@ class stock:
         self.end = self.convertTime(end)
 
         self.yahooHandle = yahoo_finance.Share(self.symbol)
-        self.hist = self.yahooHandle.get_historical(self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d"))
-
+        self.hist = list(reversed(self.yahooHandle.get_historical(self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d"))))
         #self.closings = [day['Close'] for day in hist]
 
     def checkDates(self, start, end):
@@ -44,24 +43,40 @@ class stock:
         if len(types) != len(fmt):
             raise ValueError("Length of 'types' and 'fmt' must be the same. len(types): %d, len(fmt): %d" % (len(types), len(fmt)))
 
+
+        # Find index in hist for plotting
+        startIndex = next(day[0] for day in enumerate(self.hist) if self.convertTime(day[1]['Date']) >= plotStart)
+
+        ''' If end was not found (date on weekend and list does not 
+            extend to next working day) set endIndex to end of list'''
+        #endIndex = len(self.hist)
+
+        try:
+            endIndex = next(day[0] for day in enumerate(self.hist) if self.convertTime(day[1]['Date']) >= plotEnd)
+        except StopIteration:
+            endIndex = len(self.hist)
+
+        # Create figure
         fig, ax = plt.subplots()
 
-        startIndex = plotStart - self.start
-        endIndex = self.end - plotEnd
-
+        # Plot
         for index, type in enumerate(types):
 
-            # TODO (BUG): Will always plot entire history
-            xvalue = [day[type] for day in self.hist]
-            dates = [self.convertTime(day['Date']) for day in self.hist]
-
-            days = dat.DayLocator(tz=None, bymonthday=None, interval=2)
-            daysFmt = dat.DateFormatter("%d-%m-%y")
+            xvalue = [day[type] for day in self.hist[startIndex:endIndex]]
+            dates = [self.convertTime(day['Date']) for day in self.hist[startIndex:endIndex]]
 
             ax.plot_date(dates, xvalue, fmt[index])
 
+        numXLabels = 10
+        interval = (endIndex - startIndex)/numXLabels + 1
+        print endIndex
+        print startIndex
+        print interval
+        # Set format for xlabel
+        days = dat.DayLocator(tz=None, bymonthday=None, interval=interval)
+        daysFmt = dat.DateFormatter("%d-%m-%y")
 
-        # TODO: Make adjustable depending on range
+        # Set axis values
         ax.xaxis.set_major_locator(days)
         ax.xaxis.set_major_formatter(daysFmt)
         ax.xaxis.set_minor_locator(days)
