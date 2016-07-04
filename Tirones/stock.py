@@ -14,16 +14,16 @@ class stock:
         self.branch = data['Branch']
         self.currency = data['Currency']
 
-    def getName():
+    def getName(self):
         return self.name
 
-    def getSymbol():
+    def getSymbol(self):
         return self.symbol
 
-    def getBranch():
+    def getBranch(self):
         return self.branch
 
-    def getCurrency():
+    def getCurrency(self):
         return self.currency
 
     def getOpen(self, start=-1, end=-1):
@@ -70,6 +70,9 @@ class stock:
 
         self.yahooHandle = yahoo_finance.Share(self.symbol)
         self.hist = list(reversed(self.yahooHandle.get_historical(self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d"))))
+
+    def isHistEmpty(self):
+        return not len(self.hist)
 
     def checkDates(self, start, end):
 
