@@ -8,6 +8,7 @@ def main():
     ABB = stock.stock(dataList[5])
 
     ABB.getHist('2016-06-01', '2016-06-26')
+    print ABB.getClose()
     ABB.plot('2016-06-01', '2016-06-26',['Close','High','Low'],['b-','r--','r--'])
 
 if __name__ == '__main__':

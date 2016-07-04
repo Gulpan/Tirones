@@ -26,6 +26,37 @@ class stock:
     def getCurrency():
         return self.currency
 
+    def getOpen(self, start=-1, end=-1):
+
+        return self.getValue(start, end, 'Open')
+
+    def getClose(self, start=-1, end=-1):
+
+        return self.getValue(start, end, 'Close')
+
+    def getValue(self, start, end, type):
+
+        if start == -1:
+            start = self.start
+
+        if end == -1:
+            end = self.end
+
+        try:
+            startIndex = self.findIndexInHist(start)
+
+        except StopIteration:
+            startIndex = 0;
+
+        try:
+            self.findIndexInHist(end)
+        except StopIteration:
+            ''' If end was not found (date on weekend and list does not 
+                extend to next working day) set endIndex to end of list'''
+            endIndex = len(self.hist)
+
+        return [day[type] for day in self.hist[startIndex:endIndex]]
+
     def convertTime(self, time):
         if not isinstance(time, datetime.date):
             return datetime.datetime.strptime(time,"%Y-%m-%d")
@@ -47,6 +78,8 @@ class stock:
         elif self.end < end:
             raise ValueError("End time after history end",'endafterhist')
 
+    def findIndexInHist(self, date):
+        return next(day[0] for day in enumerate(self.hist) if self.convertTime(day[1]['Date']) >= date)
 
     def plot(self, plotStart, plotEnd, types=['Close'], fmt=['b-']):
 
@@ -57,22 +90,21 @@ class stock:
         if len(types) != len(fmt):
             raise ValueError("Length of 'types' and 'fmt' must be the same. len(types): %d, len(fmt): %d" % (len(types), len(fmt)))
 
-
         # Find index in hist for plotting
         try:
-            startIndex = next(day[0] for day in enumerate(self.hist) if self.convertTime(day[1]['Date']) >= plotStart)
+            startIndex = self.findIndexInHist(plotStart)
 
         except StopIteration:
             startIndex = 0;
-        ''' If end was not found (date on weekend and list does not 
-            extend to next working day) set endIndex to end of list'''
-        #endIndex = len(self.hist)
 
         try:
-            endIndex = next(day[0] for day in enumerate(self.hist) if self.convertTime(day[1]['Date']) >= plotEnd)
+            self.findIndexInHist(plotEnd)
         except StopIteration:
+            ''' If end was not found (date on weekend and list does not 
+                extend to next working day) set endIndex to end of list'''
             endIndex = len(self.hist)
 
+        
         # Create figure
         fig, ax = plt.subplots()
 
