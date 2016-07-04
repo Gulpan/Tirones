@@ -14,6 +14,18 @@ class stock:
         self.branch = data['Branch']
         self.currency = data['Currency']
 
+    def getName():
+        return self.name
+
+    def getSymbol():
+        return self.symbol
+
+    def getBranch():
+        return self.branch
+
+    def getCurrency():
+        return self.currency
+
     def convertTime(self, time):
         if not isinstance(time, datetime.date):
             return datetime.datetime.strptime(time,"%Y-%m-%d")
@@ -27,7 +39,6 @@ class stock:
 
         self.yahooHandle = yahoo_finance.Share(self.symbol)
         self.hist = list(reversed(self.yahooHandle.get_historical(self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d"))))
-        #self.closings = [day['Close'] for day in hist]
 
     def checkDates(self, start, end):
 
@@ -48,8 +59,11 @@ class stock:
 
 
         # Find index in hist for plotting
-        startIndex = next(day[0] for day in enumerate(self.hist) if self.convertTime(day[1]['Date']) >= plotStart)
+        try:
+            startIndex = next(day[0] for day in enumerate(self.hist) if self.convertTime(day[1]['Date']) >= plotStart)
 
+        except StopIteration:
+            startIndex = 0;
         ''' If end was not found (date on weekend and list does not 
             extend to next working day) set endIndex to end of list'''
         #endIndex = len(self.hist)
