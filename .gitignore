@@ -93,3 +93,6 @@ ENV/
 
 # htm files for reading stocksymbols
 *.htm
+
+# Package files for stock information
+*.pkl

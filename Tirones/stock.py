@@ -14,18 +14,6 @@ class stock:
         self.branch = data['Branch']
         self.currency = data['Currency']
 
-    def getName(self):
-        return self.name
-
-    def getSymbol(self):
-        return self.symbol
-
-    def getBranch(self):
-        return self.branch
-
-    def getCurrency(self):
-        return self.currency
-
     def getOpen(self, start=-1, end=-1):
 
         return self.getValue(start, end, 'Open')
@@ -74,6 +62,18 @@ class stock:
     def isHistEmpty(self):
         return not len(self.hist)
 
+    def padHist(self, dates):
+        if len(dates) == len(self.hist):
+            return
+
+        try:
+            for i in range(0,len(dates)-1):
+                while(self.hist[i]['Date'] != dates[i]):
+                    self.hist.insert(i,{'Volume': '0', 'Symbol': self.symbol, 'Adj_Close': '0', 'High': '0', 'Low': '0', 'Date': dates[i], 'Close': '0', 'Open': '0'})             
+        except IndexError:
+            while(len(self.hist) < len(dates)):
+                self.hist.append({'Volume': '0', 'Symbol': self.symbol, 'Adj_Close': '0', 'High': '0', 'Low': '0', 'Date': dates[i], 'Close': '0', 'Open': '0'})
+    
     def checkDates(self, start, end):
 
         if self.start > start:
